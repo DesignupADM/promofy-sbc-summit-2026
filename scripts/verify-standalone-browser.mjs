@@ -159,7 +159,7 @@ const interactions = await evaluate(`(() => {
 const failures = viewportResults.flatMap((result) => {
   const viewportFailures = [];
   if (result.scrollWidth > result.width) viewportFailures.push(`${result.width}px horizontal overflow`);
-  if (result.sections !== 8) viewportFailures.push(`${result.width}px section count`);
+  if (result.sections !== 7) viewportFailures.push(`${result.width}px section count`);
   if (result.h1 !== 1) viewportFailures.push(`${result.width}px H1 count`);
   if (result.incompleteImages !== 0) viewportFailures.push(`${result.width}px images`);
   if (result.localReferences !== 0) viewportFailures.push(`${result.width}px local references`);

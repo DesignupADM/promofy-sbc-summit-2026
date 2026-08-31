@@ -1,7 +1,6 @@
 import SiteHeader from "./site-header";
 import EventHero from "./event-hero";
 import FeatureBento from "./ui/feature-bento";
-import LiveExperience from "./live-experience";
 import Awards from "./awards";
 import EventTeam from "./event-team";
 import BookingSection from "./booking";
@@ -20,7 +19,6 @@ export function EventLandingPage() {
         <EventHero />
         <EventTeam />
         <FeatureBento />
-        <LiveExperience />
         <Awards />
         <BookingSection />
         <Faq />

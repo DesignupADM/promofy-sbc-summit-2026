@@ -46,7 +46,6 @@ html = html
 const embeddedAssets = [
   "Ice.png",
   "Starties-Thrasher-Transparent-1.png",
-  "promofy-live-experience-v2.jpg",
   "promofy-logo.svg",
   "promofy-sbc-hero.webp",
   "promofy-signal-system.webp",

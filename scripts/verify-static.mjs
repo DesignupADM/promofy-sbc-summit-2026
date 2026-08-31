@@ -4,7 +4,6 @@ const pages = ["out/index.html", "out/sbc-summit-2026/index.html"];
 const requiredIds = [
   "meet-us",
   "why-promofy",
-  "live-experience",
   "request-meeting",
   "faq-heading",
   "final-heading",
@@ -20,7 +19,6 @@ const expectedSections = [
   "hero",
   "event-team",
   "feature-bento",
-  "live",
   "awards",
   "booking",
   "faq",

@@ -13,7 +13,6 @@ export const EVENT = {
 export const NAV_LINKS = [
   { label: "Meet us", href: "#meet-us" },
   { label: "Why Promofy", href: "#why-promofy" },
-  { label: "Live experience", href: "#live-experience" },
 ] as const;
 
 export type TeamMember = {
@@ -169,13 +168,6 @@ export const PRODUCTS: Product[] = [
     tags: ["AI campaign creation", "Behaviour analytics", "Smart segmentation"],
     href: "https://promofy.ai/ai-suite/",
   },
-];
-
-export const LIVE_STEPS = [
-  { n: "01", title: "Scan", note: "Point your phone at the stand and join in seconds." },
-  { n: "02", title: "Join", note: "One tap. No app. No sign-up friction." },
-  { n: "03", title: "Predict / Play", note: "Make your pick before the moment hits." },
-  { n: "04", title: "See it happen live", note: "Your result lands on the big screen at S18." },
 ];
 
 export const INTEGRATION_STEPS = [
