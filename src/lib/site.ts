@@ -37,8 +37,10 @@ export const EVENT_TEAM: TeamMember[] = [
     role: "CEO & Co-founder",
     focus: "Company direction, strategic partnerships and long-term commercial fit.",
     linkedinHref: "https://www.linkedin.com/in/irakli-davarashvili/",
-    bookingHref: process.env.NEXT_PUBLIC_IRAKLI_BOOKING_URL || "#request-meeting",
-    bookingLabel: process.env.NEXT_PUBLIC_IRAKLI_BOOKING_URL ? "Book directly" : "Request a meeting",
+    bookingHref:
+      process.env.NEXT_PUBLIC_IRAKLI_BOOKING_URL ||
+      "https://meetings-eu1.hubspot.com/irakli-davarashvili/sbc-lisbon-irakli?uuid=c4e15f96-d1de-419b-9563-818a86911415",
+    bookingLabel: "Book directly",
   },
   {
     id: "vakhtang",
@@ -48,7 +50,9 @@ export const EVENT_TEAM: TeamMember[] = [
     role: "CPO & Co-founder",
     focus: "Product strategy, AI, gamification mechanics and integration roadmap.",
     linkedinHref: "https://www.linkedin.com/in/vmdivani/",
-    bookingHref: process.env.NEXT_PUBLIC_VAKHTANG_BOOKING_URL || "https://calendly.com/promofy-vakho",
+    bookingHref:
+      process.env.NEXT_PUBLIC_VAKHTANG_BOOKING_URL ||
+      "https://meetings-eu1.hubspot.com/vakho/sbc-lisbon-vakho?uuid=3c541abd-7014-4dc5-860a-02e1a5ca9d25",
     bookingLabel: "Book directly",
   },
   {
@@ -59,7 +63,9 @@ export const EVENT_TEAM: TeamMember[] = [
     role: "Head of Sales",
     focus: "Use-case discovery, commercial scope and the fastest route to a relevant demo.",
     linkedinHref: "https://www.linkedin.com/in/neginnamazi/",
-    bookingHref: process.env.NEXT_PUBLIC_NEGIN_BOOKING_URL || "https://calendly.com/n-namazi-promofy",
+    bookingHref:
+      process.env.NEXT_PUBLIC_NEGIN_BOOKING_URL ||
+      "https://meetings-eu1.hubspot.com/negin-namazi/sbc-lisbon-2026-negin?uuid=632d0a41-9d0b-4e8d-8125-90589ab85263",
     bookingLabel: "Book directly",
   },
 ];
