@@ -11,6 +11,13 @@ import {
   EVENT_TEAM,
 } from "@/lib/site";
 import Reveal from "./reveal";
+import { submitMeeting } from "@/lib/submit-meeting.mjs";
+
+const meetingConfig = {
+  portalId: process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID ?? "",
+  formId: process.env.NEXT_PUBLIC_HUBSPOT_FORM_ID ?? "",
+  endpoint: MEETING_FORM_ENDPOINT,
+};
 
 type FormState = {
   firstName: string;
@@ -72,16 +79,7 @@ export default function BookingSection() {
     }
     setStatus("sending");
     try {
-      if (MEETING_FORM_ENDPOINT) {
-        const res = await fetch(MEETING_FORM_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...values, source: "sbc-summit-2026-landing" }),
-        });
-        if (!res.ok) throw new Error(`Request failed (${res.status})`);
-      } else {
-        await new Promise((r) => setTimeout(r, 700));
-      }
+      await submitMeeting(values, meetingConfig);
       setStatus("success");
       setValues(EMPTY);
     } catch {
@@ -175,7 +173,7 @@ export default function BookingSection() {
                   </p>
                 </div>
               ) : (
-                <form className="booking-form" onSubmit={onSubmit} noValidate>
+                <form className="booking-form" data-meeting-config={JSON.stringify(meetingConfig)} onSubmit={onSubmit} noValidate>
                   <div className="form-grid">
                     <div className="field">
                       <label htmlFor="firstName">

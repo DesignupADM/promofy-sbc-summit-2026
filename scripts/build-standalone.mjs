@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { submitMeeting } from "../src/lib/submit-meeting.mjs";
 
 const root = process.cwd();
 const inputPath = path.join(root, "out", "index.html");
@@ -81,6 +82,7 @@ const standaloneScript = String.raw`
 <script>
 (() => {
   "use strict";
+  const submitMeeting = ${submitMeeting.toString()};
 
   document.documentElement.classList.add("js");
 
@@ -221,18 +223,11 @@ const standaloneScript = String.raw`
     if (formStatus) formStatus.textContent = "";
 
     const values = Object.fromEntries(new FormData(form).entries());
-    values.source = "sbc-summit-2026-standalone";
-    const endpoint = window.PROMOFY_MEETING_FORM_ENDPOINT || "";
+    const config = JSON.parse(form.dataset.meetingConfig || "{}");
+    config.endpoint = window.PROMOFY_MEETING_FORM_ENDPOINT || config.endpoint;
 
     try {
-      if (endpoint) {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(values),
-        });
-        if (!response.ok) throw new Error("Request failed (" + response.status + ")");
-      }
+      await submitMeeting(values, config);
       form.reset();
       if (formStatus) {
         formStatus.innerHTML = '<p class="ok">Thanks — your SBC meeting request is in. The Promofy team will confirm your slot by email shortly.</p>';

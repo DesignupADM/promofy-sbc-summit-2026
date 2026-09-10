@@ -121,7 +121,7 @@ for (const viewport of viewports) {
   viewportResults.push({ ...audit, screenshot: viewport.screenshot });
 }
 
-const interactions = await evaluate(`(() => {
+const interactions = await evaluate(`(async () => {
   const menu = document.querySelector(".menu-button");
   menu.click();
   const menuOpened = menu.getAttribute("aria-expanded") === "true" && !document.getElementById("mobile-nav").hidden;
@@ -150,11 +150,22 @@ const interactions = await evaluate(`(() => {
     control.dispatchEvent(new Event("input", { bubbles: true }));
     control.dispatchEvent(new Event("change", { bubbles: true }));
   });
+  const originalFetch = window.fetch;
+  const originalConfig = form.dataset.meetingConfig;
+  form.dataset.meetingConfig = JSON.stringify({ portalId: "123456", formId: "12345678-1234-1234-1234-123456789abc" });
+  let submitted = false;
+  window.fetch = async (_url, options) => {
+    submitted = JSON.parse(options.body).fields.some(field => field.name === "email" && field.value === "alex@example.com");
+    return { ok: true };
+  };
   form.querySelector("button[type='submit']").click();
-  const success = form.querySelector(".form-status")?.textContent.includes("request is in") ?? false;
+  await new Promise(resolve => setTimeout(resolve, 0));
+  const success = submitted && (form.querySelector(".form-status")?.textContent.includes("request is in") ?? false);
+  window.fetch = originalFetch;
+  form.dataset.meetingConfig = originalConfig;
 
   return { menuOpened, menuClosed, faqOpened, invalidFocus, validationAlerts, success };
-})()`);
+})()`, true);
 
 const failures = viewportResults.flatMap((result) => {
   const viewportFailures = [];
