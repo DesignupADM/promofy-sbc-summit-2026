@@ -17,9 +17,11 @@ export async function submitMeeting(values, config) {
       time: "sbc_preferred_time", message: "sbc_message", source: "sbc_submission_source",
     };
     payload = {
-      fields: Object.entries(mapping).map(([key, name]) => ({
-        objectTypeId: "0-1", name, value: String(payload[key] || "").trim(),
-      })),
+      // Only the fields the visitor actually filled in are sent, so the Forms API
+      // never overwrites existing HubSpot properties with empty values.
+      fields: Object.entries(mapping)
+        .map(([key, name]) => ({ objectTypeId: "0-1", name, value: String(payload[key] || "").trim() }))
+        .filter((field) => field.value !== ""),
       submittedAt: String(Date.now()),
       context: { pageUri: window.location.href, pageName: document.title },
     };

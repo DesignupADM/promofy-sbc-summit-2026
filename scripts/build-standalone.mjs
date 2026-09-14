@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { submitMeeting } from "../src/lib/submit-meeting.mjs";
 
 const root = process.cwd();
 const inputPath = path.join(root, "out", "index.html");
@@ -70,6 +71,7 @@ const standaloneScript = String.raw`
 <script>
 (() => {
   "use strict";
+  const submitMeeting = ${submitMeeting.toString()};
 
   document.documentElement.classList.add("js");
 
@@ -320,21 +322,17 @@ const standaloneScript = String.raw`
 
     showStep("handoff");
 
-    const endpoint = window.PROMOFY_MEETING_FORM_ENDPOINT || "";
-    if (endpoint) {
-      fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: fields.firstName.value,
-          lastName: fields.lastName.value,
-          email: fields.email.value,
-          preferredHost: host.name,
-          hubspotBookingUrl: bookingUrl,
-          source: "sbc-summit-2026-standalone",
-        }),
-      }).catch(() => undefined);
-    }
+    const config = JSON.parse(detailsForm.dataset.meetingConfig || "{}");
+    config.endpoint = window.PROMOFY_MEETING_FORM_ENDPOINT || config.endpoint;
+    submitMeeting(
+      {
+        firstName: fields.firstName.value.trim(),
+        lastName: fields.lastName.value.trim(),
+        email: fields.email.value.trim(),
+        preferredHost: host.name,
+      },
+      config,
+    ).catch(() => undefined);
   });
 
   document.querySelectorAll(".booking-back").forEach((button) => {

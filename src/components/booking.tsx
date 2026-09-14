@@ -11,6 +11,13 @@ import {
   meetingBookingUrl,
 } from "@/lib/site";
 import Reveal from "./reveal";
+import { submitMeeting } from "@/lib/submit-meeting.mjs";
+
+const meetingConfig = {
+  portalId: process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID ?? "",
+  formId: process.env.NEXT_PUBLIC_HUBSPOT_FORM_ID ?? "",
+  endpoint: MEETING_FORM_ENDPOINT,
+};
 
 type Step = "host" | "details" | "handoff";
 
@@ -110,18 +117,17 @@ export default function BookingSection() {
     setHandoffUrl(bookingUrl);
     setStep("handoff");
 
-    if (MEETING_FORM_ENDPOINT) {
-      void fetch(MEETING_FORM_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...values,
-          preferredHost: host.name,
-          hubspotBookingUrl: bookingUrl,
-          source: "sbc-summit-2026-landing",
-        }),
-      }).catch(() => undefined);
-    }
+    // Lead capture runs alongside the scheduler handoff: the visitor always keeps
+    // moving to HubSpot, even when the CRM submission is unconfigured or fails.
+    void submitMeeting(
+      {
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        email: values.email.trim(),
+        preferredHost: host.name,
+      },
+      meetingConfig,
+    ).catch(() => undefined);
   };
 
   const restart = () => {
@@ -300,7 +306,12 @@ export default function BookingSection() {
                   </button>
                 </div>
 
-                <form className="booking-form" onSubmit={onSubmit} noValidate>
+                <form
+                  className="booking-form"
+                  data-meeting-config={JSON.stringify(meetingConfig)}
+                  onSubmit={onSubmit}
+                  noValidate
+                >
                   <div className="form-grid">
                     <div className="field">
                       <label htmlFor="firstName">

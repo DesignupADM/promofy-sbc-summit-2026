@@ -54,3 +54,32 @@ test("meeting submissions preserve all details and reject unsuccessful delivery"
     delete globalThis.document;
   }
 });
+
+test("booking flow submissions omit fields the visitor never filled in", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.window = { location: { href: "https://promofy.ai/sbc-summit-2026/" } };
+  globalThis.document = { title: "Promofy at SBC Summit 2026" };
+  const config = { portalId: "123456", formId: "12345678-1234-1234-1234-123456789abc" };
+  try {
+    globalThis.fetch = async (_url, options) => {
+      const fields = JSON.parse(options.body).fields;
+      assert.deepEqual(Object.fromEntries(fields.map((field) => [field.name, field.value])), {
+        firstname: "Alex",
+        lastname: "Silva",
+        email: "alex@example.com",
+        sbc_preferred_host: "Negin Namazi",
+        sbc_submission_source: "sbc-summit-2026-landing",
+      });
+      assert.ok(fields.every((field) => field.value !== ""), "empty values must never be submitted");
+      return { ok: true };
+    };
+    await submitMeeting(
+      { firstName: "Alex", lastName: "Silva", email: "alex@example.com", preferredHost: "Negin Namazi" },
+      config,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete globalThis.window;
+    delete globalThis.document;
+  }
+});

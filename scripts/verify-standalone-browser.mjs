@@ -121,7 +121,7 @@ for (const viewport of viewports) {
   viewportResults.push({ ...audit, screenshot: viewport.screenshot });
 }
 
-const interactions = await evaluate(`(() => {
+const interactions = await evaluate(`(async () => {
   const menu = document.querySelector(".menu-button");
   menu.click();
   const menuOpened = menu.getAttribute("aria-expanded") === "true" && !document.getElementById("mobile-nav").hidden;
@@ -155,6 +155,13 @@ const interactions = await evaluate(`(() => {
   const invalidFocus = document.activeElement?.id;
   const validationAlerts = form.querySelectorAll('[role="alert"]').length;
 
+  const submissions = [];
+  window.fetch = async (url, options) => {
+    submissions.push({ url, body: JSON.parse(options.body) });
+    return { ok: true };
+  };
+  form.dataset.meetingConfig = JSON.stringify({ portalId: "123456", formId: "12345678-1234-1234-1234-123456789abc" });
+
   [
     ["firstName", "Alex"],
     ["lastName", "Silva"],
@@ -165,11 +172,16 @@ const interactions = await evaluate(`(() => {
     control.dispatchEvent(new Event("input", { bubbles: true }));
   });
   form.querySelector("button[type='submit']").click();
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
   const handoffShown = document.getElementById("booking-step-handoff").hidden === false;
   const bookingUrl = opened[0] ?? "";
   const prefill = new URL(bookingUrl).searchParams;
   const handoffHref = document.getElementById("booking-handoff-link").getAttribute("href");
+  const submission = submissions[0];
+  const hubspotFields = submission
+    ? Object.fromEntries(submission.body.fields.map((field) => [field.name, field.value]))
+    : {};
 
   const back = document.querySelector("#booking-step-handoff .booking-back");
   back.click();
@@ -190,9 +202,17 @@ const interactions = await evaluate(`(() => {
     bookingLastName: prefill.get("lastname"),
     bookingEmail: prefill.get("email"),
     handoffHrefMatches: handoffHref === bookingUrl,
+    hubspotUrl: submission?.url ?? "",
+    hubspotFirstName: hubspotFields.firstname,
+    hubspotLastName: hubspotFields.lastname,
+    hubspotEmail: hubspotFields.email,
+    hubspotPreferredHost: hubspotFields.sbc_preferred_host,
+    hubspotSource: hubspotFields.sbc_submission_source,
+    hubspotEmptyFields: submission ? submission.body.fields.filter((field) => field.value === "").length : -1,
+    hubspotSubmittedAt: Number(submission?.body?.submittedAt) > 0,
     restarted,
   };
-})()`);
+})()`, true);
 
 const failures = viewportResults.flatMap((result) => {
   const viewportFailures = [];
@@ -221,6 +241,14 @@ const interactionsExpectations = [
   ["bookingLastName", "Silva"],
   ["bookingEmail", "alex@example.com"],
   ["handoffHrefMatches", true],
+  ["hubspotUrl", "https://api.hsforms.com/submissions/v3/integration/submit/123456/12345678-1234-1234-1234-123456789abc"],
+  ["hubspotFirstName", "Alex"],
+  ["hubspotLastName", "Silva"],
+  ["hubspotEmail", "alex@example.com"],
+  ["hubspotPreferredHost", "Vakhtang Mdivani"],
+  ["hubspotSource", "sbc-summit-2026-landing"],
+  ["hubspotEmptyFields", 0],
+  ["hubspotSubmittedAt", true],
   ["restarted", true],
 ];
 
