@@ -121,7 +121,7 @@ for (const viewport of viewports) {
   viewportResults.push({ ...audit, screenshot: viewport.screenshot });
 }
 
-const interactions = await evaluate(`(async () => {
+const interactions = await evaluate(`(() => {
   const menu = document.querySelector(".menu-button");
   menu.click();
   const menuOpened = menu.getAttribute("aria-expanded") === "true" && !document.getElementById("mobile-nav").hidden;
@@ -133,7 +133,24 @@ const interactions = await evaluate(`(async () => {
   const panel = document.getElementById(faq.getAttribute("aria-controls"));
   const faqOpened = faq.getAttribute("aria-expanded") === "true" && panel.hidden === false && panel.getAttribute("role") === "region";
 
-  const form = document.querySelector(".booking-form");
+  const continueButton = document.getElementById("booking-step-host").querySelector("button");
+  continueButton.click();
+  const hostErrorShown = Boolean(document.getElementById("host-error"));
+  const hostErrorFocus = document.activeElement?.id;
+
+  const opened = [];
+  window.open = (url) => {
+    opened.push(url);
+    return { closed: false };
+  };
+
+  const host = document.getElementById("host-vakhtang");
+  host.checked = true;
+  host.dispatchEvent(new Event("change", { bubbles: true }));
+  continueButton.click();
+  const detailsShown = document.getElementById("booking-step-details").hidden === false;
+
+  const form = document.getElementById("booking-step-details").querySelector("form");
   form.querySelector("button[type='submit']").click();
   const invalidFocus = document.activeElement?.id;
   const validationAlerts = form.querySelectorAll('[role="alert"]').length;
@@ -142,30 +159,40 @@ const interactions = await evaluate(`(async () => {
     ["firstName", "Alex"],
     ["lastName", "Silva"],
     ["email", "alex@example.com"],
-    ["interest", "AI"],
-    ["day", "Flexible"],
   ].forEach(([id, value]) => {
     const control = document.getElementById(id);
     control.value = value;
     control.dispatchEvent(new Event("input", { bubbles: true }));
-    control.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  const originalFetch = window.fetch;
-  const originalConfig = form.dataset.meetingConfig;
-  form.dataset.meetingConfig = JSON.stringify({ portalId: "123456", formId: "12345678-1234-1234-1234-123456789abc" });
-  let submitted = false;
-  window.fetch = async (_url, options) => {
-    submitted = JSON.parse(options.body).fields.some(field => field.name === "email" && field.value === "alex@example.com");
-    return { ok: true };
-  };
   form.querySelector("button[type='submit']").click();
-  await new Promise(resolve => setTimeout(resolve, 0));
-  const success = submitted && (form.querySelector(".form-status")?.textContent.includes("request is in") ?? false);
-  window.fetch = originalFetch;
-  form.dataset.meetingConfig = originalConfig;
 
-  return { menuOpened, menuClosed, faqOpened, invalidFocus, validationAlerts, success };
-})()`, true);
+  const handoffShown = document.getElementById("booking-step-handoff").hidden === false;
+  const bookingUrl = opened[0] ?? "";
+  const prefill = new URL(bookingUrl).searchParams;
+  const handoffHref = document.getElementById("booking-handoff-link").getAttribute("href");
+
+  const back = document.querySelector("#booking-step-handoff .booking-back");
+  back.click();
+  const restarted = document.getElementById("booking-step-host").hidden === false;
+
+  return {
+    menuOpened,
+    menuClosed,
+    faqOpened,
+    hostErrorShown,
+    hostErrorFocus,
+    detailsShown,
+    invalidFocus,
+    validationAlerts,
+    handoffShown,
+    bookingHost: prefill.get("host") ?? new URL(bookingUrl).pathname,
+    bookingFirstName: prefill.get("firstname"),
+    bookingLastName: prefill.get("lastname"),
+    bookingEmail: prefill.get("email"),
+    handoffHrefMatches: handoffHref === bookingUrl,
+    restarted,
+  };
+})()`);
 
 const failures = viewportResults.flatMap((result) => {
   const viewportFailures = [];
@@ -180,8 +207,33 @@ const failures = viewportResults.flatMap((result) => {
   return viewportFailures;
 });
 
-if (!Object.values(interactions).every((value, index) => index === 3 ? value === "firstName" : index === 4 ? value === 5 : value === true)) {
-  failures.push("interactive behavior");
+const interactionsExpectations = [
+  ["menuOpened", true],
+  ["menuClosed", true],
+  ["faqOpened", true],
+  ["hostErrorShown", true],
+  ["hostErrorFocus", "host-irakli"],
+  ["detailsShown", true],
+  ["invalidFocus", "firstName"],
+  ["validationAlerts", 3],
+  ["handoffShown", true],
+  ["bookingFirstName", "Alex"],
+  ["bookingLastName", "Silva"],
+  ["bookingEmail", "alex@example.com"],
+  ["handoffHrefMatches", true],
+  ["restarted", true],
+];
+
+const interactionFailures = interactionsExpectations
+  .filter(([key, expected]) => interactions[key] !== expected)
+  .map(([key, expected]) => `${key}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(interactions[key])}`);
+
+if (!String(interactions.bookingHost).includes("vakho")) {
+  interactionFailures.push(`bookingHost: expected Vakhtang's HubSpot link, got ${JSON.stringify(interactions.bookingHost)}`);
+}
+
+if (interactionFailures.length > 0) {
+  failures.push(`interactive behavior (${interactionFailures.join("; ")})`);
 }
 
 console.log(JSON.stringify({ viewportResults, interactions, failures }, null, 2));

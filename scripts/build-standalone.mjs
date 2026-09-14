@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { submitMeeting } from "../src/lib/submit-meeting.mjs";
 
 const root = process.cwd();
 const inputPath = path.join(root, "out", "index.html");
@@ -61,18 +60,7 @@ for (const fileName of embeddedAssets) {
 const iconUri = dataUri(path.join(root, "out", "icon.svg"));
 html = html.replace(/\/icon\.svg\?[^"']+/g, iconUri);
 
-const formFieldNames = [
-  "firstName",
-  "lastName",
-  "email",
-  "company",
-  "jobTitle",
-  "interest",
-  "preferredHost",
-  "day",
-  "time",
-  "message",
-];
+const formFieldNames = ["firstName", "lastName", "email"];
 
 for (const fieldName of formFieldNames) {
   html = html.replace(`id="${fieldName}"`, `name="${fieldName}" id="${fieldName}"`);
@@ -82,7 +70,6 @@ const standaloneScript = String.raw`
 <script>
 (() => {
   "use strict";
-  const submitMeeting = ${submitMeeting.toString()};
 
   document.documentElement.classList.add("js");
 
@@ -152,16 +139,89 @@ const standaloneScript = String.raw`
     });
   });
 
-  const form = document.querySelector(".booking-form");
-  const formStatus = form?.querySelector(".form-status");
-  const submitButton = form?.querySelector("button[type='submit']");
+  const fields = {
+    firstName: document.getElementById("firstName"),
+    lastName: document.getElementById("lastName"),
+    email: document.getElementById("email"),
+  };
+  const hostInputs = Array.from(document.querySelectorAll('input[name="host"]'));
+  const hostPanel = document.getElementById("booking-step-host");
+  const detailsPanel = document.getElementById("booking-step-details");
+  const handoffPanel = document.getElementById("booking-step-handoff");
+  const detailsForm = detailsPanel?.querySelector("form");
+  const progressSteps = Array.from(document.querySelectorAll(".booking-progress li"));
+  const continueButton = hostPanel?.querySelector("button");
+  const bookingOptions = hostPanel?.querySelector(".booking-hosts");
+  const stepNumbers = ["1", "2"];
+  const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
   const requiredMessages = {
     firstName: "Please enter your first name.",
     lastName: "Please enter your last name.",
     email: "Please enter your work email.",
-    interest: "Please choose your area of interest.",
-    day: "Please choose a preferred day.",
   };
+
+  let selectedInput = hostInputs.find((input) => input.checked) || null;
+
+  function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  }
+
+  function hostFromInput(input) {
+    return {
+      firstName: input.dataset.hostFirst || "",
+      name: input.dataset.hostName || "",
+      role: input.dataset.hostRole || "",
+      initials: input.dataset.hostInitials || "",
+      avatar: input.dataset.hostAvatar || "",
+      bookingUrl: input.dataset.bookingUrl || "",
+    };
+  }
+
+  function renderTarget(host) {
+    const avatar = document.getElementById("booking-target-avatar");
+    if (avatar) {
+      avatar.className = "booking-avatar booking-avatar--" + host.avatar;
+      avatar.textContent = host.initials;
+    }
+    setText("booking-target-name", host.name);
+    setText("booking-target-role", host.role);
+    setText("booking-submit-label", "Open " + host.firstName + "'s calendar");
+    setText("booking-handoff-name", host.firstName);
+    setText("booking-handoff-label", "Open " + host.firstName + "'s calendar");
+  }
+
+  function renderProgress(step) {
+    const currentIndex = step === "handoff" ? -1 : step === "details" ? 1 : 0;
+    progressSteps.forEach((item, index) => {
+      const isDone = currentIndex === -1 || index < currentIndex;
+      item.classList.toggle("is-current", index === currentIndex);
+      item.classList.toggle("is-done", isDone);
+      const badge = item.querySelector("span");
+      if (badge) badge.innerHTML = isDone ? checkIcon : stepNumbers[index];
+    });
+  }
+
+  function showStep(step) {
+    if (hostPanel) hostPanel.hidden = step !== "host";
+    if (detailsPanel) detailsPanel.hidden = step !== "details";
+    if (handoffPanel) handoffPanel.hidden = step !== "handoff";
+    renderProgress(step);
+  }
+
+  function clearHostError() {
+    document.getElementById("host-error")?.remove();
+  }
+
+  function showHostError(message) {
+    clearHostError();
+    const error = document.createElement("span");
+    error.className = "field-error";
+    error.id = "host-error";
+    error.setAttribute("role", "alert");
+    error.textContent = message;
+    bookingOptions?.insertAdjacentElement("afterend", error);
+  }
 
   function clearFieldError(control) {
     const field = control.closest(".field");
@@ -177,29 +237,57 @@ const standaloneScript = String.raw`
     error.id = control.id + "-error";
     error.setAttribute("role", "alert");
     error.textContent = message;
-    const field = control.closest(".field");
-    const anchor = field?.querySelector(".select-wrap") || control;
-    anchor.insertAdjacentElement("afterend", error);
+    control.insertAdjacentElement("afterend", error);
     control.setAttribute("aria-invalid", "true");
     control.setAttribute("aria-describedby", error.id);
   }
 
-  form?.querySelectorAll("input, select, textarea").forEach((control) => {
-    const clear = () => {
-      clearFieldError(control);
-      if (formStatus) formStatus.textContent = "";
-    };
-    control.addEventListener("input", clear);
-    control.addEventListener("change", clear);
+  function withPrefill(href, values) {
+    try {
+      const url = new URL(href, window.location.href);
+      [
+        ["firstname", values.firstName],
+        ["lastname", values.lastName],
+        ["email", values.email],
+      ].forEach(([key, value]) => {
+        if (value && value.trim()) url.searchParams.set(key, value.trim());
+      });
+      return url.toString();
+    } catch (_error) {
+      return href;
+    }
+  }
+
+  hostInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      selectedInput = input;
+      clearHostError();
+      renderTarget(hostFromInput(input));
+    });
   });
 
-  form?.addEventListener("submit", async (event) => {
+  Object.values(fields).forEach((control) => {
+    control?.addEventListener("input", () => clearFieldError(control));
+  });
+
+  continueButton?.addEventListener("click", () => {
+    if (!selectedInput) {
+      showHostError("Please choose who you'd like to meet.");
+      hostInputs[0]?.focus();
+      return;
+    }
+    clearHostError();
+    renderTarget(hostFromInput(selectedInput));
+    showStep("details");
+    (fields.firstName?.value ? fields.email : fields.firstName)?.focus();
+  });
+
+  detailsForm?.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (!submitButton || submitButton.disabled) return;
 
     let firstInvalid = null;
     Object.entries(requiredMessages).forEach(([id, message]) => {
-      const control = document.getElementById(id);
+      const control = fields[id];
       if (!control) return;
       clearFieldError(control);
       const value = control.value.trim();
@@ -218,28 +306,46 @@ const standaloneScript = String.raw`
       return;
     }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "Sending…";
-    if (formStatus) formStatus.textContent = "";
+    const host = hostFromInput(selectedInput);
+    const bookingUrl = withPrefill(host.bookingUrl, {
+      firstName: fields.firstName.value,
+      lastName: fields.lastName.value,
+      email: fields.email.value,
+    });
 
-    const values = Object.fromEntries(new FormData(form).entries());
-    const config = JSON.parse(form.dataset.meetingConfig || "{}");
-    config.endpoint = window.PROMOFY_MEETING_FORM_ENDPOINT || config.endpoint;
+    window.open(bookingUrl, "_blank", "noopener,noreferrer");
 
-    try {
-      await submitMeeting(values, config);
-      form.reset();
-      if (formStatus) {
-        formStatus.innerHTML = '<p class="ok">Thanks — your SBC meeting request is in. The Promofy team will confirm your slot by email shortly.</p>';
-      }
-    } catch (_error) {
-      if (formStatus) {
-        formStatus.innerHTML = '<span class="err">Your request was not sent. Try again, or use a team member\'s direct booking link above.</span>';
-      }
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = "Send meeting request";
+    const handoffLink = document.getElementById("booking-handoff-link");
+    if (handoffLink) handoffLink.href = bookingUrl;
+
+    showStep("handoff");
+
+    const endpoint = window.PROMOFY_MEETING_FORM_ENDPOINT || "";
+    if (endpoint) {
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: fields.firstName.value,
+          lastName: fields.lastName.value,
+          email: fields.email.value,
+          preferredHost: host.name,
+          hubspotBookingUrl: bookingUrl,
+          source: "sbc-summit-2026-standalone",
+        }),
+      }).catch(() => undefined);
     }
+  });
+
+  document.querySelectorAll(".booking-back").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.closest("#booking-step-handoff")) {
+        detailsForm?.reset();
+        Object.values(fields).forEach((control) => control && clearFieldError(control));
+      }
+      showStep("host");
+      (selectedInput || hostInputs[0])?.focus();
+    });
   });
 })();
 </script>`;
