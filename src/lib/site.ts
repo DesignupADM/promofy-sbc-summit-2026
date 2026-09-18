@@ -275,33 +275,41 @@ export const GLOBAL_FEATURES = [
   },
 ];
 
-export const AREAS_OF_INTEREST = [
-  "Spark / Acquisition",
-  "Gamification & Retention",
-  "Sports Engagement",
-  "Loyalty",
-  "Jackpots",
-  "AI",
-  "CRM / Platform Integration",
-  "Multi-Brand / Multi-Market",
-  "Partnership",
-  "Other",
-];
+/** HubSpot sits behind the booking links; these contact properties prefill its scheduler. */
+export type MeetingDetails = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+};
 
-export const PREFERRED_DAYS = [
-  "Online demo — before SBC",
-  "Tuesday 29 September",
-  "Wednesday 30 September",
-  "Thursday 1 October",
-  "Flexible",
-];
+export const BOOKING_FALLBACK_ID = "negin";
 
-export const PREFERRED_TIMES = [
-  "Morning (9:00 – 12:00)",
-  "Midday (12:00 – 15:00)",
-  "Afternoon (15:00 – 18:00)",
-  "Flexible",
-];
+export const BOOKING_HOSTS = EVENT_TEAM;
+
+export function bookingHostById(id: string): TeamMember {
+  return BOOKING_HOSTS.find((member) => member.id === id) ?? BOOKING_HOSTS[0];
+}
+
+/**
+ * Appends HubSpot contact properties to a meeting link so the scheduler opens
+ * with the visitor's name and email already filled in.
+ */
+export function meetingBookingUrl(href: string, details: MeetingDetails): string {
+  if (!href.startsWith("http")) return href;
+
+  const url = new URL(href);
+  const prefill: [string, string | undefined][] = [
+    ["firstname", details.firstName?.trim()],
+    ["lastname", details.lastName?.trim()],
+    ["email", details.email?.trim()],
+  ];
+
+  for (const [key, value] of prefill) {
+    if (value) url.searchParams.set(key, value);
+  }
+
+  return url.toString();
+}
 
 export const FAQ_ITEMS = [
   {

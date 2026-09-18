@@ -77,26 +77,3 @@ Vakhtang and Negin fall back to their verified public Calendly pages. Irakli fal
 ## SEO
 
 The page includes canonical metadata, Open Graph and Twitter metadata, keyword coverage, an Event JSON-LD object, and an FAQPage JSON-LD object.
-
-## September design update and scheduler attribution
-
-The active Next.js page follows the supplied reference: violet hero, Meet/Visit/Watch cards, live showcase, capabilities, proof, team, meeting selector, integration and final CTA. Team initials and existing product imagery are intentional placeholders for the reference photography. Confirm the showcase schedule before publishing a time. General booking CTAs open Negin's scheduler; the selector recommends Irakli for partnerships/investors, Vakhtang for AI/integration, and Negin for other conversations. Selecting a priority recommends a host; it does not submit a contact form or reserve a meeting.
-
-The current page uses direct HubSpot scheduling instead of the legacy request form. The form component and its configuration above remain available for future use. The pre-existing standalone HTML is a legacy artifact; deploy `out/` for this updated interactive page.
-
-Every active meeting link includes:
-
-| Parameter | Default / behavior |
-| --- | --- |
-| `utm_source` | `promofy_website` |
-| `utm_medium` | `website` |
-| `utm_campaign` | `sbc_lisbon_2026` |
-| `utm_content` | CTA location: `header`, `hero`, `experience_meet`, `showcase`, `team_irakli`, `team_vakhtang`, `team_negin`, `integration`, `final`, or `planner_<host>_<priority>` |
-
-Incoming source, medium, campaign and term UTMs are forwarded to the scheduler. Existing destination tracking values are retained when there are no incoming values, followed by the configured defaults. `utm_content` always identifies the clicked CTA. Existing meeting UUIDs and fragments are preserved; unrelated query parameters are not forwarded. The original incoming `utm_content` is intentionally replaced by placement. No cross-session attribution storage is used.
-
-Defaults are configurable through the three `NEXT_PUBLIC_BOOKING_UTM_*` variables in `.env.example`; rebuild after changing them. Example campaign entry URL: `/sbc-summit-2026/?utm_source=linkedin&utm_medium=social&utm_campaign=sbc_lisbon_2026`.
-
-In HubSpot contact records/reports, inspect **Source of last booking in meetings tool**, **Medium of last booking in meetings tool**, and **Campaign of last booking in meetings tool**. HubSpot documents these three properties at https://knowledge.hubspot.com/meetings-tool/share-scheduling-pages. `utm_content` is available on the outgoing URL; do not assume HubSpot exposes it as a built-in meeting property. Reporting on CTA placement requires a separate analytics/custom-property setup. Live HubSpot property population still needs a controlled completed booking after deployment; local testing does not create bookings.
-
-Validation: `npm run lint`, `npm run build`, `node scripts/test-booking-url.mjs` (Node 24), and `node scripts/verify-static.mjs`. Typography uses bundled local fonts so the build works without a Google Fonts request.

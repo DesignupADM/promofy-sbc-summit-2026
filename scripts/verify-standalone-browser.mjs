@@ -133,38 +133,85 @@ const interactions = await evaluate(`(async () => {
   const panel = document.getElementById(faq.getAttribute("aria-controls"));
   const faqOpened = faq.getAttribute("aria-expanded") === "true" && panel.hidden === false && panel.getAttribute("role") === "region";
 
-  const form = document.querySelector(".booking-form");
+  const continueButton = document.getElementById("booking-step-host").querySelector("button");
+  continueButton.click();
+  const hostErrorShown = Boolean(document.getElementById("host-error"));
+  const hostErrorFocus = document.activeElement?.id;
+
+  const opened = [];
+  window.open = (url) => {
+    opened.push(url);
+    return { closed: false };
+  };
+
+  const host = document.getElementById("host-vakhtang");
+  host.checked = true;
+  host.dispatchEvent(new Event("change", { bubbles: true }));
+  continueButton.click();
+  const detailsShown = document.getElementById("booking-step-details").hidden === false;
+
+  const form = document.getElementById("booking-step-details").querySelector("form");
   form.querySelector("button[type='submit']").click();
   const invalidFocus = document.activeElement?.id;
   const validationAlerts = form.querySelectorAll('[role="alert"]').length;
+
+  const submissions = [];
+  window.fetch = async (url, options) => {
+    submissions.push({ url, body: JSON.parse(options.body) });
+    return { ok: true };
+  };
+  form.dataset.meetingConfig = JSON.stringify({ portalId: "123456", formId: "12345678-1234-1234-1234-123456789abc" });
 
   [
     ["firstName", "Alex"],
     ["lastName", "Silva"],
     ["email", "alex@example.com"],
-    ["interest", "AI"],
-    ["day", "Flexible"],
   ].forEach(([id, value]) => {
     const control = document.getElementById(id);
     control.value = value;
     control.dispatchEvent(new Event("input", { bubbles: true }));
-    control.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  const originalFetch = window.fetch;
-  const originalConfig = form.dataset.meetingConfig;
-  form.dataset.meetingConfig = JSON.stringify({ portalId: "123456", formId: "12345678-1234-1234-1234-123456789abc" });
-  let submitted = false;
-  window.fetch = async (_url, options) => {
-    submitted = JSON.parse(options.body).fields.some(field => field.name === "email" && field.value === "alex@example.com");
-    return { ok: true };
-  };
   form.querySelector("button[type='submit']").click();
-  await new Promise(resolve => setTimeout(resolve, 0));
-  const success = submitted && (form.querySelector(".form-status")?.textContent.includes("request is in") ?? false);
-  window.fetch = originalFetch;
-  form.dataset.meetingConfig = originalConfig;
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
-  return { menuOpened, menuClosed, faqOpened, invalidFocus, validationAlerts, success };
+  const handoffShown = document.getElementById("booking-step-handoff").hidden === false;
+  const bookingUrl = opened[0] ?? "";
+  const prefill = new URL(bookingUrl).searchParams;
+  const handoffHref = document.getElementById("booking-handoff-link").getAttribute("href");
+  const submission = submissions[0];
+  const hubspotFields = submission
+    ? Object.fromEntries(submission.body.fields.map((field) => [field.name, field.value]))
+    : {};
+
+  const back = document.querySelector("#booking-step-handoff .booking-back");
+  back.click();
+  const restarted = document.getElementById("booking-step-host").hidden === false;
+
+  return {
+    menuOpened,
+    menuClosed,
+    faqOpened,
+    hostErrorShown,
+    hostErrorFocus,
+    detailsShown,
+    invalidFocus,
+    validationAlerts,
+    handoffShown,
+    bookingHost: prefill.get("host") ?? new URL(bookingUrl).pathname,
+    bookingFirstName: prefill.get("firstname"),
+    bookingLastName: prefill.get("lastname"),
+    bookingEmail: prefill.get("email"),
+    handoffHrefMatches: handoffHref === bookingUrl,
+    hubspotUrl: submission?.url ?? "",
+    hubspotFirstName: hubspotFields.firstname,
+    hubspotLastName: hubspotFields.lastname,
+    hubspotEmail: hubspotFields.email,
+    hubspotPreferredHost: hubspotFields.sbc_preferred_host,
+    hubspotSource: hubspotFields.sbc_submission_source,
+    hubspotEmptyFields: submission ? submission.body.fields.filter((field) => field.value === "").length : -1,
+    hubspotSubmittedAt: Number(submission?.body?.submittedAt) > 0,
+    restarted,
+  };
 })()`, true);
 
 const failures = viewportResults.flatMap((result) => {
@@ -180,8 +227,41 @@ const failures = viewportResults.flatMap((result) => {
   return viewportFailures;
 });
 
-if (!Object.values(interactions).every((value, index) => index === 3 ? value === "firstName" : index === 4 ? value === 5 : value === true)) {
-  failures.push("interactive behavior");
+const interactionsExpectations = [
+  ["menuOpened", true],
+  ["menuClosed", true],
+  ["faqOpened", true],
+  ["hostErrorShown", true],
+  ["hostErrorFocus", "host-irakli"],
+  ["detailsShown", true],
+  ["invalidFocus", "firstName"],
+  ["validationAlerts", 3],
+  ["handoffShown", true],
+  ["bookingFirstName", "Alex"],
+  ["bookingLastName", "Silva"],
+  ["bookingEmail", "alex@example.com"],
+  ["handoffHrefMatches", true],
+  ["hubspotUrl", "https://api.hsforms.com/submissions/v3/integration/submit/123456/12345678-1234-1234-1234-123456789abc"],
+  ["hubspotFirstName", "Alex"],
+  ["hubspotLastName", "Silva"],
+  ["hubspotEmail", "alex@example.com"],
+  ["hubspotPreferredHost", "Vakhtang Mdivani"],
+  ["hubspotSource", "sbc-summit-2026-landing"],
+  ["hubspotEmptyFields", 0],
+  ["hubspotSubmittedAt", true],
+  ["restarted", true],
+];
+
+const interactionFailures = interactionsExpectations
+  .filter(([key, expected]) => interactions[key] !== expected)
+  .map(([key, expected]) => `${key}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(interactions[key])}`);
+
+if (!String(interactions.bookingHost).includes("vakho")) {
+  interactionFailures.push(`bookingHost: expected Vakhtang's HubSpot link, got ${JSON.stringify(interactions.bookingHost)}`);
+}
+
+if (interactionFailures.length > 0) {
+  failures.push(`interactive behavior (${interactionFailures.join("; ")})`);
 }
 
 console.log(JSON.stringify({ viewportResults, interactions, failures }, null, 2));
