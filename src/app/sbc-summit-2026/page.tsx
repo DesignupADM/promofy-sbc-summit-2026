@@ -1,5 +1,5 @@
 import { EventLandingPage } from "@/components/event-landing-page";
-import { eventJsonLd, organizationJsonLd, faqJsonLd } from "@/lib/site";
+import { eventJsonLd, organizationJsonLd } from "@/lib/site";
 
 export default function SbcSummitPage() {
   return (
@@ -12,11 +12,8 @@ export default function SbcSummitPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
-      />
       <EventLandingPage />
     </>
   );
 }
+

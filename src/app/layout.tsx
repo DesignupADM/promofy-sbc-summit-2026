@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
+const montserrat = localFont({
+  src: [
+    { path: "../../public/assets/fonts/SF-Pro-Display-Regular.woff2", weight: "400" },
+    { path: "../../public/assets/fonts/SF-Pro-Display-Medium.woff2", weight: "500" },
+    { path: "../../public/assets/fonts/SF-Pro-Display-Semibold.woff2", weight: "600" },
+    { path: "../../public/assets/fonts/SF-Pro-Display-Bold.woff2", weight: "700 900" },
+  ],
   variable: "--font-montserrat",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
