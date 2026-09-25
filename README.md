@@ -121,15 +121,18 @@ Notes:
 - If you deploy to a plain static host instead, leave `NEXT_PUBLIC_RSVP_FORM_ENDPOINT` blank and configure HubSpot IDs — HubSpot takes precedence whenever they are set
 - The endpoint receives the same JSON payload as the HubSpot fallback, so any JSON-compatible CRM endpoint can substitute for the CSV server
 
-## Deploying on Coolify (Docker)
+## Deploying on EasyPanel (Docker)
 
-The repo ships a `Dockerfile` (and `.dockerignore`) so Coolify can build and run the site + CSV collector as one container.
+The repo ships a `Dockerfile` (and `.dockerignore`) so EasyPanel can build and run the site + CSV collector as one container.
 
-1. In Coolify, create a new resource → select the repo → set **Build Pack** to `Dockerfile`
-2. Expose port **3000** (the Dockerfile declares `EXPOSE 3000`; Coolify/Traefik handles HTTPS in front of it)
-3. Add a **persistent storage** volume in the resource's *Storages* tab:
-   - Mount path: `/app/data`
-   - This keeps `rsvps.csv` across rebuilds, restarts and redeploys — without it every redeploy wipes the file
+1. In EasyPanel, create a **Project**, then add a **Service** with:
+   - Source: **Git repository** (this repo) — or a registry image if you build/push one yourself
+   - Build type: **Dockerfile** (EasyPanel will build the image from the repo)
+2. Add your domain in the **Domains** tab of the service and set the **Port** to `3000` (the Dockerfile declares `EXPOSE 3000`; EasyPanel/Traefik handles HTTPS in front of it)
+3. Add a **persistent volume** in the service's *Advanced → Volume Mounts*:
+   - Container path: `/app/data`
+   - This keeps `rsvps.csv` across rebuilds and redeploys — without it every redeploy wipes the file
+   - For a bind mount, use a path EasyPanel owns, e.g. `/etc/easypanel/projects/{project}/{service}/volumes/data`
 4. Leave the HubSpot variables unset so submissions go to `/api/rsvp` (the endpoint is baked into the image at build time via the Dockerfile ARG, default `/api/rsvp`)
 
 Optional environment variables:
@@ -149,6 +152,8 @@ curl -X POST https://your-domain/api/rsvp \
 ```
 
 Then check the CSV inside the container or volume (`/app/data/rsvps.csv`). Back up the volume (or `rsvps.csv`) alongside your other server backups — attendee data lives only there.
+
+> The same steps apply on Coolify: Build Pack `Dockerfile`, expose port `3000`, persistent storage mounted at `/app/data`.
 
 The alternative endpoint receives a JSON `POST` with the submitted form fields. Configure CORS for the production domain and return any `2xx` response on success. HubSpot takes precedence when its IDs are set. Missing configuration, rejected submissions, network failures, and timeouts show an error and retain the entered details; there is no simulated success mode.
 
