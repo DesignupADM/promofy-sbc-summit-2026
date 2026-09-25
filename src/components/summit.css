@@ -2633,3 +2633,52 @@
     line-height: 1.55;
   }
 }
+
+/* Showcase moment — big date and a clear RSVP path on the campaign page. */
+.s-showcase-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 16px;
+  font-size: clamp(26px, 3.2vw, 40px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.05;
+}
+.s-showcase-date svg {
+  color: #e56bcc;
+  flex-shrink: 0;
+}
+.s-showcase .s-actions > .s-showcase-rsvp:first-child {
+  color: #160b2b;
+  background: linear-gradient(105deg, #f975d5, #a356f7 65%, #7955ff);
+  border: 0;
+}
+.s-stage-info .s-stage-date {
+  margin-top: 6px !important;
+  font-size: 30px !important;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  color: #fff !important;
+}
+.s-stage-rsvp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ff9dd6;
+}
+.s-stage-rsvp:hover {
+  color: #ffc9ea;
+}
+@media (max-width: 760px) {
+  .s-showcase-date {
+    margin: 14px 0 12px;
+  }
+  .s-stage-info .s-stage-date {
+    font-size: 26px !important;
+  }
+}
