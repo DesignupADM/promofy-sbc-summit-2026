@@ -344,6 +344,33 @@ export const FAQ_ITEMS = [
 
 export const MEETING_FORM_ENDPOINT = process.env.NEXT_PUBLIC_MEETING_FORM_ENDPOINT ?? "";
 
+export const RSVP_DAYS = [
+  { id: "sep29", label: "Tue 29 Sep", value: "29 September 2026" },
+  { id: "sep30", label: "Wed 30 Sep", value: "30 September 2026" },
+  { id: "oct1", label: "Thu 1 Oct", value: "1 October 2026" },
+] as const;
+
+export const RSVP_FORM_ENDPOINT = process.env.NEXT_PUBLIC_RSVP_FORM_ENDPOINT ?? "";
+
+export const RSVP_FAQ_ITEMS = [
+  {
+    q: "Is the RSVP free?",
+    a: "Yes. The RSVP and your visit to the Promofy stand are free, including live demos and a conversation with the team at S18.",
+  },
+  {
+    q: "Do I need a ticket for SBC Summit?",
+    a: "The RSVP registers your visit to the Promofy stand at the Startup Hub, S18. Entry to the venue itself is managed by SBC Summit — check your SBC Summit 2026 pass or registration before you travel.",
+  },
+  {
+    q: "Can I bring colleagues?",
+    a: "Yes. Ask each colleague to RSVP individually so we know who is coming — or stop by S18 as a group and we will take it from there.",
+  },
+  {
+    q: "Can I also book a private meeting with the team?",
+    a: "Yes. After you RSVP you can book a 1-to-1 meeting with Irakli, Vakhtang or Negin from the confirmation screen — or pick a slot anytime on the event page.",
+  },
+];
+
 export function eventJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -406,6 +433,31 @@ export function faqJsonLd() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: FAQ_ITEMS.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+}
+
+export function rsvpEventJsonLd() {
+  return {
+    ...eventJsonLd(),
+    name: "RSVP — Promofy at SBC Summit 2026",
+    description:
+      "RSVP to meet Promofy at SBC Summit 2026 in Lisbon. Live demos, the engagement ecosystem and the team at the Startup Hub, stand S18 — 29 September to 1 October 2026.",
+    url: `${EVENT.siteUrl}/rsvp/`,
+  };
+}
+
+export function rsvpFaqJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: RSVP_FAQ_ITEMS.map((item) => ({
       "@type": "Question",
       name: item.q,
       acceptedAnswer: {

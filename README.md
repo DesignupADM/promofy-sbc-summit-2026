@@ -5,6 +5,7 @@ A responsive, static-export Next.js landing page for Promofy's SBC Summit 2026 c
 ## Routes
 
 - `/sbc-summit-2026/` — canonical campaign page
+- `/rsvp/` — event RSVP page (stand visit registration, calendar add, meeting handoff)
 - `/` — mirrors the campaign page for convenient local preview
 
 ## Run locally
@@ -61,6 +62,64 @@ If HubSpot is not configured, an alternative JSON endpoint can be used:
 ```bash
 NEXT_PUBLIC_MEETING_FORM_ENDPOINT=https://your-crm-or-form-endpoint.example
 ```
+
+## RSVP page
+
+The `/rsvp/` page collects stand-visit registrations and submits through the same integration style as the meeting form. Copy `.env.example` to `.env.local` and set:
+
+```bash
+NEXT_PUBLIC_HUBSPOT_PORTAL_ID=your-portal-id
+NEXT_PUBLIC_HUBSPOT_RSVP_FORM_ID=your-rsvp-form-guid
+```
+
+Create a dedicated HubSpot RSVP form and add these **contact properties** with these exact internal names:
+
+| RSVP field | HubSpot internal property name |
+| --- | --- |
+| First name | `firstname` |
+| Last name | `lastname` |
+| Work email | `email` |
+| Company | `company` |
+| Job title | `jobtitle` |
+| Attending days | `sbc_rsvp_days` |
+| RSVP status | `sbc_rsvp_status` |
+| Campaign source (hidden) | `sbc_submission_source` |
+
+Only first name, last name and email are required, matching the page. Days are sent as the selected day labels, status is always `Confirmed`, and the campaign source is `sbc-summit-2026-rsvp`. As with the meeting form, visitors are not opted into marketing subscriptions, and live delivery must be verified with a controlled submission after deployment.
+
+An alternative JSON endpoint is also supported:
+
+```bash
+NEXT_PUBLIC_RSVP_FORM_ENDPOINT=https://your-crm-or-form-endpoint.example
+```
+
+The RSVP confirmation screen offers Google Calendar and `.ics` options (generated client-side, no backend), plus a handoff to the meeting booking flow.
+
+## CSV collection (bundled Node server)
+
+For teams that want RSVPs in a spreadsheet instead of a CRM, the repo ships a zero-dependency Node server (`server/rsvp-server.mjs`) that serves the static `out/` build and appends every RSVP as a row in `data/rsvps.csv`.
+
+Build the site with the endpoint baked in, then start the server:
+
+```bash
+NEXT_PUBLIC_RSVP_FORM_ENDPOINT=/api/rsvp npm run build
+npm run start:csv
+```
+
+The server listens on `PORT` (default `3000`, `HOST` default `0.0.0.0`). `data/rsvps.csv` is created on first start with the columns `timestamp, first_name, last_name, email, company, job_title, days, status, source` and appends are serialised so concurrent submissions never interleave. The `data/` directory is gitignored — attendee data stays on the server and should never be committed.
+
+Server behaviour:
+
+- `POST /api/rsvp` validates payload size, JSON shape, required fields and email format; CSV cells are quoted/escaped and formula injection is neutralised
+- A hidden honeypot field drops bot submissions silently
+- Simple per-IP rate limiting (20 submissions per minute)
+- Everything else is served as static files with long-lived caching; `/rsvp/`, `/sbc-summit-2026/` and `/` all work
+
+Notes:
+
+- This replaces static hosting: deploy the app with `npm run start:csv` (Node 18+, e.g. a VPS, Render or Railway), not `npm run start`
+- If you deploy to a plain static host instead, leave `NEXT_PUBLIC_RSVP_FORM_ENDPOINT` blank and configure HubSpot IDs — HubSpot takes precedence whenever they are set
+- The endpoint receives the same JSON payload as the HubSpot fallback, so any JSON-compatible CRM endpoint can substitute for the CSV server
 
 The alternative endpoint receives a JSON `POST` with the submitted form fields. Configure CORS for the production domain and return any `2xx` response on success. HubSpot takes precedence when its IDs are set. Missing configuration, rejected submissions, network failures, and timeouts show an error and retain the entered details; there is no simulated success mode.
 

@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "serve out -l tcp://0.0.0.0:${PORT:-3000}",
+    "start:csv": "node server/rsvp-server.mjs",
     "lint": "eslint ."
   },
   "dependencies": {

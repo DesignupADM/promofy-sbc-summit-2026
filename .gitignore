@@ -6,4 +6,7 @@ out
 .DS_Store
 npm-debug.log*
 
+# Collected attendee data — never commit PII
+data/
+
 *.tsbuildinfo

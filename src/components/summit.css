@@ -2068,3 +2068,475 @@
   .s-hero-copy { text-shadow: 0 2px 16px #100b2180; }
   .s-hero .s-proof { background: #100b2170; }
 }
+
+/* RSVP page — same voice as the summit campaign, focused on a single conversion. */
+.s-rsvp-hero > .s-shell {
+  padding-top: 44px;
+  padding-bottom: 52px;
+}
+.s-rsvp-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+.s-rsvp-copy {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 16px #100b2180;
+}
+.s-rsvp-copy h2 {
+  font-size: 26px;
+  margin-bottom: 14px;
+}
+.s-rsvp-copy > p:not(.s-eyebrow) {
+  max-width: 470px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.s-rsvp-card {
+  position: relative;
+  z-index: 1;
+  padding: 30px 28px;
+  border: 1px solid #a56ef9;
+  border-radius: 22px;
+  background: linear-gradient(130deg, #211339ee, #100b20f2);
+  box-shadow: 0 0 35px #8e25e455, 0 12px 36px #06030d80;
+}
+.s-rsvp-card-head {
+  margin-bottom: 20px;
+}
+.s-rsvp-card-head h3 {
+  font-size: 25px;
+  letter-spacing: -.5px;
+}
+.s-rsvp-card-head p {
+  font-size: 12px;
+  color: #bfb0cb;
+  margin-top: 6px;
+}
+.s-rsvp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.s-rsvp-hp {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.s-rsvp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.s-rsvp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.s-rsvp-field label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #d9cde8;
+}
+.s-rsvp-field label span {
+  color: var(--pink);
+}
+.s-rsvp-field input {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  outline: 0;
+  border: 1px solid #ffffff28;
+  border-radius: 10px;
+  background: #ffffff08;
+  color: #fff;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.s-rsvp-field input::placeholder {
+  color: #8d7fa5;
+}
+.s-rsvp-field input:focus {
+  border-color: #dca7ff;
+  box-shadow: 0 0 0 3px #a04aff26;
+}
+.s-rsvp-field input[aria-invalid="true"] {
+  border-color: #ff7d8e;
+  box-shadow: 0 0 0 3px #ff7d8e26;
+}
+.s-rsvp-field-error {
+  font-size: 11px;
+  color: #ff9dab;
+}
+.s-rsvp-days {
+  border: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  min-width: 0;
+}
+.s-rsvp-days legend {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #d9cde8;
+  margin-bottom: 9px;
+}
+.s-rsvp-days legend span {
+  color: #9d8bb4;
+  font-weight: 600;
+}
+.s-rsvp-days .s-chips {
+  margin: 0;
+}
+.s-rsvp-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+.s-rsvp-submit:disabled {
+  opacity: .7;
+  transform: none;
+  box-shadow: none;
+  cursor: wait;
+}
+.s-rsvp-micro {
+  font-size: 10px;
+  color: #9d8bb4;
+  text-align: center;
+  margin: 0;
+}
+.s-rsvp-error {
+  font-size: 12px;
+  color: #ff9dab;
+  border: 1px solid #ff7d8e4d;
+  background: #ff7d8e12;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 0;
+}
+.s-rsvp-success {
+  outline: none;
+}
+.s-rsvp-success-icon {
+  display: flex;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(105deg, #f975d5, #a356f7 65%, #7955ff);
+  color: #160b2b;
+  margin-bottom: 18px;
+}
+.s-rsvp-success-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.s-rsvp-success h3 {
+  font-size: 25px;
+  letter-spacing: -.5px;
+  margin-bottom: 10px;
+}
+.s-rsvp-success > p {
+  font-size: 13px;
+  color: #d0c7dc;
+  line-height: 1.55;
+}
+.s-rsvp-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 18px;
+}
+.s-rsvp-success-actions .s-button {
+  padding: 12px 18px;
+  font-size: 12px;
+}
+.s-rsvp-success-note {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border: 1px solid #ffffff1c;
+  border-radius: 12px;
+  background: #ffffff06;
+  font-size: 12px;
+  color: #c6b4e4;
+  line-height: 1.5;
+}
+.s-rsvp-success-note svg {
+  color: var(--pink);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.s-rsvp-success-note strong {
+  color: #fff;
+}
+.s-rsvp-success-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+.s-rsvp-success .s-text-link {
+  color: #e8b5ff;
+  font-size: 12px;
+  min-height: 36px;
+}
+.s-rsvp-success .s-text-link:hover {
+  color: #ff65d5;
+}
+.s-rsvp-edit {
+  background: none;
+  border: 0;
+  padding: 8px 4px;
+  color: #9d8bb4;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.s-rsvp-edit:hover {
+  color: #e8b5ff;
+}
+.s-rsvp-expect {
+  padding: 40px 0;
+}
+.s-rsvp-expect-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.s-rsvp-expect-grid article {
+  background: white;
+  border: 1px solid #eae5f2;
+  border-radius: 13px;
+  padding: 20px;
+}
+.s-rsvp-expect-grid svg {
+  width: 28px;
+  height: 28px;
+  color: #7d4e9b;
+  margin-bottom: 14px;
+}
+.s-rsvp-expect-grid h3 {
+  font-size: 16px;
+  color: #171025;
+  margin-bottom: 8px;
+}
+.s-rsvp-expect-grid p {
+  font-size: 12px;
+  line-height: 1.45;
+}
+.s-rsvp-faq {
+  padding: 40px 0;
+  background: radial-gradient(ellipse at 8% 100%, #70257480, transparent 50%), #110d1e;
+}
+.s-rsvp-faq-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 56px;
+  align-items: start;
+}
+.s-rsvp-faq h2 {
+  margin-bottom: 14px;
+}
+.s-rsvp-faq-grid > div:first-child > p:not(.s-eyebrow) {
+  font-size: 13px;
+  max-width: 340px;
+  margin-bottom: 20px;
+}
+.s-rsvp-faq-list details {
+  border-bottom: 1px solid #ffffff1a;
+}
+.s-rsvp-faq-list summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 2px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.s-rsvp-faq-list summary::-webkit-details-marker {
+  display: none;
+}
+.s-rsvp-faq-list summary span {
+  color: #cf95f5;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  transition: transform .2s;
+}
+.s-rsvp-faq-list details[open] summary span {
+  transform: rotate(45deg);
+}
+.s-rsvp-faq-list details p {
+  font-size: 13px;
+  padding: 0 2px 18px;
+  max-width: 560px;
+}
+@media (max-width: 1100px) {
+  .s-rsvp-hero-grid {
+    gap: 34px;
+  }
+  .s-rsvp-expect-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .s-rsvp-faq-grid {
+    gap: 32px;
+  }
+}
+/* Tablets and landscape phones: stack the hero so the form card never feels squeezed. */
+@media (max-width: 900px) {
+  .s-rsvp-hero > .s-shell {
+    padding-top: 36px;
+    padding-bottom: 44px;
+  }
+  .s-hero .s-rsvp-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .s-rsvp-copy > p:not(.s-eyebrow) {
+    max-width: 560px;
+  }
+  .s-rsvp-card {
+    max-width: 560px;
+  }
+  /* 16px inputs stop iOS Safari from auto-zooming on focus (iPhones and iPads). */
+  .s-rsvp-field input {
+    font-size: 16px;
+  }
+  .s-rsvp-days .s-chips button {
+    min-height: 44px;
+  }
+  .s-rsvp-submit {
+    min-height: 48px;
+  }
+  .s-rsvp-faq-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .s-rsvp-faq-grid > div:first-child > p:not(.s-eyebrow) {
+    max-width: 520px;
+  }
+}
+@media (max-width: 760px) {
+  .s-rsvp-copy,
+  .s-rsvp-form,
+  .s-rsvp-card-head,
+  .s-rsvp-success {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  .s-rsvp-hero > .s-shell {
+    padding-top: 28px;
+    padding-bottom: 40px;
+  }
+  .s-hero .s-rsvp-hero-grid {
+    gap: 24px;
+  }
+  .s-rsvp-copy .s-eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.1px;
+    max-width: 340px;
+  }
+  .s-rsvp-copy h1 {
+    font-size: clamp(40px, 9.4vw, 58px);
+    margin: 16px 0 14px;
+  }
+  .s-rsvp-copy h2 {
+    font-size: 23px;
+  }
+  .s-rsvp-copy > p:not(.s-eyebrow) {
+    font-size: 14px;
+  }
+  .s-rsvp-card {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+  .s-rsvp-card-head h3 {
+    font-size: 22px;
+  }
+  .s-rsvp-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .s-rsvp-field label {
+    font-size: 10px;
+  }
+  /* Slightly taller controls for thumb use on phones. */
+  .s-rsvp-field input {
+    min-height: 50px;
+  }
+  .s-rsvp-days legend {
+    font-size: 10px;
+  }
+  .s-rsvp-days .s-chips button {
+    min-height: 46px;
+    font-size: 12px;
+  }
+  .s-rsvp-submit {
+    min-height: 52px;
+    font-size: 14px;
+  }
+  .s-rsvp-success-icon {
+    width: 48px;
+    height: 48px;
+  }
+  .s-rsvp-success-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .s-rsvp-success h3 {
+    font-size: 22px;
+  }
+  .s-rsvp-success-actions .s-button {
+    width: 100%;
+  }
+  .s-rsvp-success-links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .s-rsvp-success .s-text-link {
+    font-size: 13px;
+  }
+  .s-rsvp-edit {
+    font-size: 13px;
+    min-height: 36px;
+  }
+  .s-rsvp-expect {
+    padding: 30px 0;
+  }
+  .s-rsvp-expect-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .s-rsvp-expect-grid article {
+    padding: 18px;
+  }
+  .s-rsvp-faq {
+    padding: 30px 0;
+  }
+  .s-rsvp-faq-grid {
+    gap: 22px;
+  }
+  .s-rsvp-faq-list summary {
+    font-size: 15px;
+    padding: 17px 2px;
+  }
+  .s-rsvp-faq-list details p {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+}
