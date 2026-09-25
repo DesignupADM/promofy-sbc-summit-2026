@@ -4,10 +4,11 @@ import { rsvpEventJsonLd, rsvpFaqJsonLd, organizationJsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://promofy.ai"),
-  title: "RSVP — Promofy at SBC Summit 2026 | Startup Hub S18, Lisbon",
+  title: "RSVP — Promofy Showcase at SBC Summit 2026 | Main Stage, 1 Oct 13:00",
   description:
-    "RSVP to meet Promofy at SBC Summit 2026 in Lisbon, 29 September–1 October. Live demos of Spark, Gamification, Sports F2P, AI and Jackpots at the Startup Hub, stand S18.",
+    "RSVP for the Promofy Showcase at SBC Summit 2026 — Main Stage, 1 October, 13:00. Promofy brings live demos of Spark, Gamification, Sports F2P, AI and Jackpots, plus the team at the Startup Hub, S18.",
   keywords: [
+    "Promofy Showcase SBC Summit 2026",
     "Promofy SBC Summit 2026 RSVP",
     "SBC Summit Lisbon 2026 RSVP",
     "Promofy event registration",
@@ -21,14 +22,14 @@ export const metadata: Metadata = {
     type: "website",
     url: "/rsvp/",
     siteName: "Promofy",
-    title: "RSVP — See Promofy Live at SBC Summit 2026",
+    title: "RSVP — Promofy Showcase at SBC Summit 2026",
     description:
-      "You're invited. RSVP for the Promofy stand at SBC Summit 2026 in Lisbon — Startup Hub, S18, 29 September–1 October.",
+      "You're invited. RSVP for the Promofy Showcase on the Main Stage — SBC Summit 2026, 1 October at 13:00. Plus live demos at the Startup Hub, S18.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RSVP — Promofy at SBC Summit 2026",
-    description: "RSVP for stand S18 and see the engagement ecosystem live in Lisbon.",
+    title: "RSVP — Promofy Showcase at SBC Summit 2026",
+    description: "Promofy is bringing something interesting to SBC. Main Stage, 1 October, 13:00.",
   },
   robots: { index: true, follow: true },
 };

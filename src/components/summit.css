@@ -2213,6 +2213,25 @@
   text-align: center;
   margin: 0;
 }
+.s-rsvp-showcase-fact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #ffffff1c;
+  border-radius: 10px;
+  background: #ffffff06;
+  font-size: 12px;
+  color: #c6b4e4;
+  line-height: 1.5;
+}
+.s-rsvp-showcase-fact svg {
+  color: var(--pink);
+  flex-shrink: 0;
+}
+.s-rsvp-showcase-fact strong {
+  color: #fff;
+}
 .s-rsvp-error {
   font-size: 12px;
   color: #ff9dab;

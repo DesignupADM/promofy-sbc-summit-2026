@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, CalendarDays, Check, Download, MapPin, Trophy, Users, Zap } from "lucide-react";
 import BrandImg from "./brand-img";
-import { EVENT, RSVP_DAYS, RSVP_FAQ_ITEMS, RSVP_FORM_ENDPOINT } from "@/lib/site";
+import { EVENT, SHOWCASE, RSVP_FAQ_ITEMS, RSVP_FORM_ENDPOINT } from "@/lib/site";
 import { submitRsvp } from "@/lib/submit-rsvp.mjs";
 import "./summit.css";
 import "./rsvp.css";
@@ -28,16 +28,17 @@ type FieldErrors = Partial<Record<keyof FormState, string>>;
 
 const EMPTY: FormState = { firstName: "", lastName: "", email: "", company: "", jobTitle: "" };
 
-const CALENDAR_TEXT = "Promofy at SBC Summit 2026";
-const CALENDAR_LOCATION = `${EVENT.venue} (FIL), Startup Hub, Stand S18`;
+const CALENDAR_TEXT = "Promofy Showcase at SBC Summit 2026";
+const CALENDAR_LOCATION = `${EVENT.venue} (FIL) — Main Stage`;
 const CALENDAR_DETAILS =
-  "Meet Promofy at the Startup Hub, stand S18. Live demos of Spark, Gamification, Sports F2P, AI and Jackpots.";
+  "Promofy brings something interesting to SBC — the Promofy Showcase on the Main Stage. Live demos of Spark, Gamification, Sports F2P, AI and Jackpots.";
 
 function googleCalendarUrl() {
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: CALENDAR_TEXT,
-    dates: "20260929/20261002",
+    dates: "20261001T130000/20261001T130000",
+    ctz: "Europe/Lisbon",
     details: CALENDAR_DETAILS,
     location: CALENDAR_LOCATION,
   });
@@ -50,10 +51,10 @@ function icsPayload() {
     "VERSION:2.0",
     "PRODID:-//Promofy//SBC Summit 2026//EN",
     "BEGIN:VEVENT",
-    "UID:promofy-sbc-summit-2026-rsvp@promofy.ai",
-    "DTSTAMP:20260929T000000Z",
-    "DTSTART;VALUE=DATE:20260929",
-    "DTEND;VALUE=DATE:20261002",
+    "UID:promofy-showcase-sbc-2026@promofy.ai",
+    "DTSTAMP:20261001T000000Z",
+    "DTSTART;TZID=Europe/Lisbon:20261001T130000",
+    "DTEND;TZID=Europe/Lisbon:20261001T130000",
     `SUMMARY:${CALENDAR_TEXT}`,
     `LOCATION:${CALENDAR_LOCATION}`,
     `DESCRIPTION:${CALENDAR_DETAILS}`,
@@ -75,16 +76,15 @@ function downloadIcs() {
 }
 
 const expectItems = [
-  { Icon: Zap, title: "Live demos", copy: "See Spark, Gamification, Sports F2P, AI and Jackpots running live — bring your hardest use case." },
-  { Icon: Users, title: "Meet the team", copy: "Irakli, Vakhtang and Negin will be on the stand across all three days." },
-  { Icon: Trophy, title: "Product Showcase", copy: "Follow the player journey on the Product Innovation Stage — from first tap to lasting loyalty." },
+  { Icon: Zap, title: "The Main Stage moment", copy: "1 October, 13:00 — Promofy brings something interesting to SBC. Follow the player journey from first tap to lasting loyalty." },
+  { Icon: Users, title: "Meet the team", copy: "Irakli, Vakhtang and Negin will be at the Startup Hub, S18, across all three days." },
+  { Icon: Trophy, title: "Live demos", copy: "See Spark, Gamification, Sports F2P, AI and Jackpots running live — bring your hardest use case." },
   { Icon: CalendarDays, title: "1-to-1 meetings", copy: "Want a private conversation? Book a slot with the team before the show." },
 ];
 
 function RsvpForm({ onDone }: { onDone: (firstName: string) => void }) {
   const [values, setValues] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [days, setDays] = useState<string[]>([]);
   const [website, setWebsite] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -92,12 +92,6 @@ function RsvpForm({ onDone }: { onDone: (firstName: string) => void }) {
   const set = (key: keyof FormState) => (e: { target: { value: string } }) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
     setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
-  };
-
-  const toggleDay = (label: string) => {
-    setDays((current) =>
-      current.includes(label) ? current.filter((day) => day !== label) : [...current, label],
-    );
   };
 
   const validate = (): keyof FormState | null => {
@@ -133,7 +127,7 @@ function RsvpForm({ onDone }: { onDone: (firstName: string) => void }) {
           email: values.email.trim(),
           company: values.company.trim(),
           jobTitle: values.jobTitle.trim(),
-          days: days.join(", "),
+          days: SHOWCASE.label,
           website,
         },
         rsvpConfig,
@@ -195,21 +189,10 @@ function RsvpForm({ onDone }: { onDone: (firstName: string) => void }) {
           <input type="text" autoComplete="organization-title" placeholder="Head of CRM" {...fieldProps("jobTitle")} />
         </div>
       </div>
-      <fieldset className="s-rsvp-days">
-        <legend>Which days will you be in Lisbon? <span aria-hidden="true">(optional)</span></legend>
-        <div className="s-chips">
-          {RSVP_DAYS.map((day) => (
-            <button
-              key={day.id}
-              type="button"
-              aria-pressed={days.includes(day.label)}
-              onClick={() => toggleDay(day.label)}
-            >
-              {day.label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      <div className="s-rsvp-showcase-fact">
+        <CalendarDays size={15} aria-hidden="true" />
+        <span><strong>Promofy Showcase</strong> · {SHOWCASE.stage} · {SHOWCASE.date}, {SHOWCASE.time}</span>
+      </div>
       {failed && (
         <p className="s-rsvp-error" role="alert">
           Something went wrong and your RSVP was not sent. Please try again — your details are still here.
@@ -235,8 +218,8 @@ function RsvpSuccess({ firstName, onEdit }: { firstName: string; onEdit: () => v
       <span className="s-rsvp-success-icon" aria-hidden="true"><Check /></span>
       <h3>You&apos;re on the list{firstName ? `, ${firstName}` : ""}.</h3>
       <p>
-        Thanks for your RSVP. We&apos;ll send a confirmation and a reminder before the show.
-        Add the event to your calendar so you don&apos;t miss S18.
+        Thanks for your RSVP. We&apos;ll send a confirmation and a reminder before the showcase.
+        Add it to your calendar so you don&apos;t miss the Main Stage moment.
       </p>
       <div className="s-rsvp-success-actions">
         <a className="s-button" href={googleCalendarUrl()} target="_blank" rel="noopener noreferrer">
@@ -248,8 +231,8 @@ function RsvpSuccess({ firstName, onEdit }: { firstName: string; onEdit: () => v
       </div>
       <div className="s-rsvp-success-note">
         <MapPin size={16} aria-hidden="true" />
-        <span><strong>Startup Hub · S18</strong> — {EVENT.venue} (FIL), {EVENT.city}.<br />
-        Don&apos;t forget to arrange your SBC Summit 2026 pass for venue entry.</span>
+        <span><strong>{SHOWCASE.name} · {SHOWCASE.stage}</strong> — {SHOWCASE.date}, {SHOWCASE.time}.<br />
+        Team at the Startup Hub, S18. Don&apos;t forget to arrange your SBC Summit 2026 pass for venue entry.</span>
       </div>
       <div className="s-rsvp-success-links">
         <a className="s-text-link" href="/sbc-summit-2026/#request-meeting">
@@ -299,17 +282,17 @@ export function RsvpPage() {
           />
           <div className="s-shell s-rsvp-hero-grid">
             <div className="s-rsvp-copy">
-              <p className="s-eyebrow">YOUR INVITATION TO SBC SUMMIT 2026</p>
+              <p className="s-eyebrow">PROMOFY SHOWCASE · SBC SUMMIT 2026 · MAIN STAGE</p>
               <h1>See you<br />in <em>Lisbon.</em></h1>
-              <h2>Meet Promofy. Live at stand S18.</h2>
+              <h2>Promofy is bringing something interesting to SBC.</h2>
               <p>
-                Drop by the Startup Hub to experience Spark, Gamification, Sports F2P, AI and
-                Jackpots — and meet the team building them. RSVP and we&apos;ll save you a welcome
-                at stand S18.
+                The Promofy Showcase takes the Main Stage on 1 October at 13:00 — a live run
+                through Spark, Gamification, Sports F2P, AI and Jackpots. RSVP for your seat,
+                and meet the team at the Startup Hub, stand S18.
               </p>
               <div className="s-location">
                 <span><MapPin size={17} /> Startup Hub · S18</span>
-                <span><CalendarDays size={17} /> 29 September – 1 October 2026</span>
+                <span><CalendarDays size={17} /> 1 October · 13:00 · Main Stage</span>
               </div>
             </div>
             <div className="s-rsvp-card" id="rsvp" aria-label="RSVP form">
@@ -318,9 +301,9 @@ export function RsvpPage() {
               ) : (
                 <>
                   <div className="s-rsvp-card-head">
-                    <p className="rsvp-card-kicker">SBC SUMMIT · LISBON</p>
+                    <p className="rsvp-card-kicker">PROMOFY SHOWCASE · 1 OCT · 13:00</p>
                     <h3>You&apos;re invited.</h3>
-                    <p>Let us know you’re coming to stand S18.</p>
+                    <p>Save your seat for the Main Stage moment.</p>
                   </div>
                   <RsvpForm onDone={handleDone} />
                   <p className="rsvp-pass-note">An SBC Summit pass is required for venue entry.</p>
@@ -334,10 +317,10 @@ export function RsvpPage() {
           <div className="s-shell">
             <div className="s-section-heading">
               <div>
-                <p className="s-eyebrow">WHAT TO EXPECT AT S18</p>
-                <h2>Three days. One stand.<br />Everything Promofy.</h2>
+                <p className="s-eyebrow">WHAT TO EXPECT AT SBC</p>
+                <h2>One stage. One moment.<br />Everything Promofy.</h2>
               </div>
-              <p>Already have your SBC pass? Stop by for a demo, a conversation, or just to see the engagement ecosystem running live.</p>
+              <p>Join the Promofy Showcase on the Main Stage — 1 October at 13:00 — and stop by S18 across all three days for demos and conversations.</p>
             </div>
             <div className="s-rsvp-expect-grid">
               {expectItems.map(({ Icon, title, copy }) => (

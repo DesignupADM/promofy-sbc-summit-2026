@@ -325,6 +325,10 @@ export const FAQ_ITEMS = [
     a: "A full walkthrough of the engagement ecosystem: acquisition experiences with Spark, gamification and loyalty journeys, sports engagement, jackpots, Promofy AI and integrations with your existing CRM and operator platforms.",
   },
   {
+    q: "When is the Promofy Showcase on the Main Stage?",
+    a: "The Promofy Showcase takes the Main Stage on 1 October 2026 at 13:00 — a live run through the player journey, from first interaction to lasting loyalty. RSVP to save your seat.",
+  },
+  {
     q: "Can I meet Promofy before SBC?",
     a: "Yes. Book an online demo before Lisbon and we'll review your engagement challenge and the relevant product and integration setup — so your SBC conversation starts a step ahead.",
   },
@@ -344,22 +348,28 @@ export const FAQ_ITEMS = [
 
 export const MEETING_FORM_ENDPOINT = process.env.NEXT_PUBLIC_MEETING_FORM_ENDPOINT ?? "";
 
-export const RSVP_DAYS = [
-  { id: "sep29", label: "Tue 29 Sep", value: "29 September 2026" },
-  { id: "sep30", label: "Wed 30 Sep", value: "30 September 2026" },
-  { id: "oct1", label: "Thu 1 Oct", value: "1 October 2026" },
-] as const;
+export const SHOWCASE = {
+  name: "Promofy Showcase",
+  date: "1 October 2026",
+  time: "13:00",
+  stage: "Main Stage",
+  label: "1 October · 13:00 · Main Stage",
+} as const;
 
 export const RSVP_FORM_ENDPOINT = process.env.NEXT_PUBLIC_RSVP_FORM_ENDPOINT ?? "";
 
 export const RSVP_FAQ_ITEMS = [
+  {
+    q: "When is the Promofy Showcase?",
+    a: "The Promofy Showcase takes the Main Stage on 1 October 2026 at 13:00 during SBC Summit. RSVP to save your seat — and visit the team at the Startup Hub, stand S18, across all three days.",
+  },
   {
     q: "Is the RSVP free?",
     a: "Yes. The RSVP and your visit to the Promofy stand are free, including live demos and a conversation with the team at S18.",
   },
   {
     q: "Do I need a ticket for SBC Summit?",
-    a: "The RSVP registers your visit to the Promofy stand at the Startup Hub, S18. Entry to the venue itself is managed by SBC Summit — check your SBC Summit 2026 pass or registration before you travel.",
+    a: "The RSVP registers your visit to the Promofy Showcase and stand S18. Entry to the venue itself is managed by SBC Summit — check your SBC Summit 2026 pass or registration before you travel.",
   },
   {
     q: "Can I bring colleagues?",
@@ -446,9 +456,9 @@ export function faqJsonLd() {
 export function rsvpEventJsonLd() {
   return {
     ...eventJsonLd(),
-    name: "RSVP — Promofy at SBC Summit 2026",
+    name: "RSVP — Promofy Showcase at SBC Summit 2026",
     description:
-      "RSVP to meet Promofy at SBC Summit 2026 in Lisbon. Live demos, the engagement ecosystem and the team at the Startup Hub, stand S18 — 29 September to 1 October 2026.",
+      "RSVP for the Promofy Showcase at SBC Summit 2026 — Main Stage, 1 October, 13:00. Promofy brings live demos of Spark, Gamification, Sports F2P, AI and Jackpots to Lisbon, plus the team at the Startup Hub, stand S18.",
     url: `${EVENT.siteUrl}/rsvp/`,
   };
 }
