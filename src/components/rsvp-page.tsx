@@ -189,9 +189,12 @@ function RsvpForm({ onDone }: { onDone: (firstName: string) => void }) {
           <input type="text" autoComplete="organization-title" placeholder="Head of CRM" {...fieldProps("jobTitle")} />
         </div>
       </div>
-      <div className="s-rsvp-showcase-fact">
-        <CalendarDays size={15} aria-hidden="true" />
-        <span><strong>Promofy Showcase</strong> · {SHOWCASE.stage} · {SHOWCASE.date}, {SHOWCASE.time}</span>
+      <div className="s-rsvp-date">
+        <CalendarDays size={28} aria-hidden="true" />
+        <div>
+          <strong>1 October 2026</strong>
+          <span>{SHOWCASE.time} · {SHOWCASE.stage}</span>
+        </div>
       </div>
       {failed && (
         <p className="s-rsvp-error" role="alert">
@@ -262,8 +265,8 @@ export function RsvpPage() {
             <BrandImg src={assets + "promofy-logo.svg"} alt="Promofy" width={142} height={40} loading="eager" />
           </a>
           <nav aria-label="Main navigation">
+            <a href="/sbc-summit-2026/#showcase">Showcase <ArrowRight size={13} /></a>
             <a href="/sbc-summit-2026/">Event Page</a>
-            <a href="#expect">What to Expect</a>
             <a href="#faq">FAQ</a>
           </nav>
           <a className="s-button" href="/sbc-summit-2026/#request-meeting">Book a Meeting<ArrowRight size={17} /></a>
@@ -292,7 +295,10 @@ export function RsvpPage() {
               </p>
               <div className="s-location">
                 <span><MapPin size={17} /> Startup Hub · S18</span>
-                <span><CalendarDays size={17} /> 1 October · 13:00 · Main Stage</span>
+              </div>
+              <div className="s-rsvp-hero-date">
+                <CalendarDays size={24} aria-hidden="true" />
+                <span>1 October · <em>13:00</em> · Main Stage</span>
               </div>
             </div>
             <div className="s-rsvp-card" id="rsvp" aria-label="RSVP form">
@@ -301,7 +307,7 @@ export function RsvpPage() {
               ) : (
                 <>
                   <div className="s-rsvp-card-head">
-                    <p className="rsvp-card-kicker">PROMOFY SHOWCASE · 1 OCT · 13:00</p>
+                    <p className="rsvp-card-kicker">PROMOFY SHOWCASE · MAIN STAGE</p>
                     <h3>You&apos;re invited.</h3>
                     <p>Save your seat for the Main Stage moment.</p>
                   </div>

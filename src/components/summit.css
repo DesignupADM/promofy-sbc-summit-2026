@@ -2070,6 +2070,15 @@
 }
 
 /* RSVP page — same voice as the summit campaign, focused on a single conversion. */
+.rsvp-page .s-header nav a[href*="#showcase"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffb399;
+}
+.rsvp-page .s-header nav a[href*="#showcase"]:hover {
+  color: #ffd2bf;
+}
 .s-rsvp-hero > .s-shell {
   padding-top: 44px;
   padding-bottom: 52px;
@@ -2213,24 +2222,48 @@
   text-align: center;
   margin: 0;
 }
-.s-rsvp-showcase-fact {
+.s-rsvp-hero-date {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid #ffffff1c;
-  border-radius: 10px;
-  background: #ffffff06;
-  font-size: 12px;
-  color: #c6b4e4;
-  line-height: 1.5;
+  gap: 12px;
+  margin-top: 26px;
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
 }
-.s-rsvp-showcase-fact svg {
+.s-rsvp-hero-date svg {
   color: var(--pink);
   flex-shrink: 0;
 }
-.s-rsvp-showcase-fact strong {
+.s-rsvp-date {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid #ffffff22;
+  border-radius: 12px;
+  background: #ffffff08;
+}
+.s-rsvp-date > svg {
+  color: var(--pink);
+  flex-shrink: 0;
+}
+.s-rsvp-date strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.05;
   color: #fff;
+}
+.s-rsvp-date span {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--pink);
 }
 .s-rsvp-error {
   font-size: 12px;
@@ -2458,6 +2491,40 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
+  .rsvp-page .s-header > .s-shell {
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    padding: 10px 0;
+  }
+  .rsvp-page .s-header nav {
+    display: flex;
+    order: 3;
+    flex-basis: 100%;
+    gap: 8px;
+    margin: 0;
+    overflow-x: auto;
+  }
+  .rsvp-page .s-header nav a {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid #ffffff2a;
+    border-radius: 999px;
+    background: #ffffff06;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .rsvp-page .s-header nav a[href*="#showcase"] {
+    color: #241126;
+    background: linear-gradient(110deg, #ffad83, #ff7b97);
+    border-color: transparent;
+  }
+  .rsvp-page .s-header nav a[href*="#showcase"]:hover {
+    color: #241126;
+  }
   .s-rsvp-hero > .s-shell {
     padding-top: 28px;
     padding-bottom: 40px;
@@ -2479,6 +2546,13 @@
   }
   .s-rsvp-copy > p:not(.s-eyebrow) {
     font-size: 14px;
+  }
+  .s-rsvp-hero-date {
+    font-size: clamp(20px, 6vw, 26px);
+    margin-top: 20px;
+  }
+  .s-rsvp-date strong {
+    font-size: 22px;
   }
   .s-rsvp-card {
     padding: 22px 18px;
