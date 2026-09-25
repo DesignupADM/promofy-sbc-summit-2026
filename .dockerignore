@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+data
+.git
+.env*
+*.log
+promofy-sbc-summit-2026-standalone.html
+README.md

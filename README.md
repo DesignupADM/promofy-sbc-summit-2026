@@ -121,6 +121,35 @@ Notes:
 - If you deploy to a plain static host instead, leave `NEXT_PUBLIC_RSVP_FORM_ENDPOINT` blank and configure HubSpot IDs — HubSpot takes precedence whenever they are set
 - The endpoint receives the same JSON payload as the HubSpot fallback, so any JSON-compatible CRM endpoint can substitute for the CSV server
 
+## Deploying on Coolify (Docker)
+
+The repo ships a `Dockerfile` (and `.dockerignore`) so Coolify can build and run the site + CSV collector as one container.
+
+1. In Coolify, create a new resource → select the repo → set **Build Pack** to `Dockerfile`
+2. Expose port **3000** (the Dockerfile declares `EXPOSE 3000`; Coolify/Traefik handles HTTPS in front of it)
+3. Add a **persistent storage** volume in the resource's *Storages* tab:
+   - Mount path: `/app/data`
+   - This keeps `rsvps.csv` across rebuilds, restarts and redeploys — without it every redeploy wipes the file
+4. Leave the HubSpot variables unset so submissions go to `/api/rsvp` (the endpoint is baked into the image at build time via the Dockerfile ARG, default `/api/rsvp`)
+
+Optional environment variables:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `3000` | Port the Node server listens on |
+| `HOST` | `0.0.0.0` | Bind address |
+
+Verifying the deployment:
+
+```bash
+curl https://your-domain/rsvp/          # the page
+curl -X POST https://your-domain/api/rsvp \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"Test","lastName":"Test","email":"test@example.com"}'
+```
+
+Then check the CSV inside the container or volume (`/app/data/rsvps.csv`). Back up the volume (or `rsvps.csv`) alongside your other server backups — attendee data lives only there.
+
 The alternative endpoint receives a JSON `POST` with the submitted form fields. Configure CORS for the production domain and return any `2xx` response on success. HubSpot takes precedence when its IDs are set. Missing configuration, rejected submissions, network failures, and timeouts show an error and retain the entered details; there is no simulated success mode.
 
 The event-team cards also support person-specific scheduling URLs:
